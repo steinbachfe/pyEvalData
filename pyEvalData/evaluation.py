@@ -495,7 +495,7 @@ class Evaluation(object):
     def plot_scans(self, scan_list, ylims=[], xlims=[], fig_size=[], xgrid=[],
                    yerr='std', xerr='std', norm2one=False, binning=True,
                    label_text='', title_text='', skip_plot=False, grid_on=True,
-                   ytext='', xtext='', fmt='-o'):
+                   ytext='', xtext='', fmt='-o',kwargsDict = {}):
         """Plot a list of scans from the spec file.
         Various plot parameters are provided.
         The plotted data are returned.
@@ -590,11 +590,11 @@ class Evaluation(object):
             if not skip_plot:
                 # plot the errorbar for each counter
                 if (xerr == 'none') & (yerr == 'none'):
-                    plt.plot(x2plot, y2plot[col], fmt, label=lt)
+                    plt.plot(x2plot, y2plot[col], fmt, label=lt,**kwargsDict)
                 else:
                     plt.errorbar(
                         x2plot, y2plot[col], fmt=fmt, label=lt,
-                        xerr=xerr2plot, yerr=yerr2plot[col])
+                        xerr=xerr2plot, yerr=yerr2plot[col],**kwargsDict)
 
         if not skip_plot:
             # add a legend, labels, title and set the limits and grid
@@ -783,8 +783,15 @@ class Evaluation(object):
         label_texts = []
         parameters = []
 
-        for i, (scan_list, parameter) in enumerate(scan_sequence):
+        for i, data in enumerate(scan_sequence):
             # traverse the scan sequence
+            
+            scan_list = data[0]
+            parameter = data[1]
+            if len(data) >= 3:
+                kwargsDict = data[2]
+            else:
+                kwargsDict = {}
 
             parameters.append(parameter)
             # format the parameter as label text of this plot if no label text
@@ -837,7 +844,8 @@ class Evaluation(object):
                 grid_on=grid_on,
                 ytext=ytext,
                 xtext=xtext,
-                fmt=fmt
+                fmt=fmt,
+                kwargsDict=kwargsDict
             )
 
             if self.xcol not in sequence_data.keys():
