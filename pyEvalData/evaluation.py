@@ -576,16 +576,19 @@ class Evaluation(object):
                 y2plot[col] = y2plot[col]/np.mean(before_zero)
                 yerr2plot[col] = yerr2plot[col]/np.mean(before_zero)
 
-            if len(label_text) == 0:
-                # if no label_text is given use the counter name
-                lt = col
+            if label_text is None:
+                lt = None
             else:
-                if len(clist) > 1:
-                    # for multiple counters add the counter name to the label
-                    lt = label_text + ' | ' + col
+                if len(label_text) == 0:
+                    # if no label_text is given use the counter name
+                    lt = col
                 else:
-                    # for a single counter just use the label_text
-                    lt = label_text
+                    if len(clist) > 1:
+                        # for multiple counters add the counter name to the label
+                        lt = label_text + ' | ' + col
+                    else:
+                        # for a single counter just use the label_text
+                        lt = label_text
 
             if not skip_plot:
                 # plot the errorbar for each counter
@@ -786,39 +789,43 @@ class Evaluation(object):
         for i, (scan_list, parameter) in enumerate(scan_sequence):
             # traverse the scan sequence
 
-            parameters.append(parameter)
-            # format the parameter as label text of this plot if no label text
-            # is given
-            if len(label_text) == 0:
-                if sequence_type == 'fluence':
-                    lt = str.format('{:.2f}  mJ/cm²', parameter)
-                elif sequence_type == 'delay':
-                    lt = str.format('{:.2f}  ps', parameter)
-                elif sequence_type == 'energy':
-                    lt = str.format('{:.2f}  eV', parameter)
-                elif sequence_type == 'theta':
-                    lt = str.format('{:.2f}  deg', parameter)
-                elif sequence_type == 'temperature':
-                    lt = str.format('{:.2f}  K', parameter)
-                elif sequence_type == 'position':
-                    lt = str.format('{:.2f}  mm', parameter)
-                elif sequence_type == 'voltage':
-                    lt = str.format('{:.2f}  V', parameter)
-                elif sequence_type == 'current':
-                    lt = str.format('{:.2f}  A', parameter)
-                elif sequence_type == 'scans':
-                    lt = str(scan_list)
-                elif sequence_type == 'none':
-                    # no parameter for single scans
-                    lt = ''
-                elif sequence_type == 'text':
-                    # parameter is a string
-                    lt = parameter
-                else:
-                    # no sequence type is given --> enumerate
-                    lt = str.format('#{}', i+1)
+            if parameter is None:
+                lt = None
             else:
-                lt = label_text[i]
+                parameters.append(parameter)
+                
+                # format the parameter as label text of this plot if no label text
+                # is given
+                if len(label_text) == 0:
+                    if sequence_type == 'fluence':
+                        lt = str.format('{:.2f}  mJ/cm²', parameter)
+                    elif sequence_type == 'delay':
+                        lt = str.format('{:.2f}  ps', parameter)
+                    elif sequence_type == 'energy':
+                        lt = str.format('{:.2f}  eV', parameter)
+                    elif sequence_type == 'theta':
+                        lt = str.format('{:.2f}  deg', parameter)
+                    elif sequence_type == 'temperature':
+                        lt = str.format('{:.2f}  K', parameter)
+                    elif sequence_type == 'position':
+                        lt = str.format('{:.2f}  mm', parameter)
+                    elif sequence_type == 'voltage':
+                        lt = str.format('{:.2f}  V', parameter)
+                    elif sequence_type == 'current':
+                        lt = str.format('{:.2f}  A', parameter)
+                    elif sequence_type == 'scans':
+                        lt = str(scan_list)
+                    elif sequence_type == 'none':
+                        # no parameter for single scans
+                        lt = ''
+                    elif sequence_type == 'text':
+                        # parameter is a string
+                        lt = parameter
+                    else:
+                        # no sequence type is given --> enumerate
+                        lt = str.format('#{}', i+1)
+                else:
+                    lt = label_text[i]
 
             # get the plot data for the scan list
             y2plot, x2plot, yerr2plot, xerr2plot, name = self.plot_scans(
